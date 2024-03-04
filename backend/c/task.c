@@ -164,6 +164,13 @@ int main(void) {
         { .id = 233, .name = "Folder3", .categories = {"Folder"}, .numCategories = 1, .parent = -1, .size = 4096 },
     };
 
+    struct File testFiles1[] = {
+        { .id = 1, .name = "a", .categories = {"a1"}, .numCategories = 1, .parent = 3, .size = 1 },
+        { .id = 2, .name = "b", .categories = {"a1", "b1"}, .numCategories = 2, .parent = 3, .size = 2 },
+        { .id = 3, .name = "c", .categories = {"a1", "b1", "c1"}, .numCategories = 1, .parent = -1, .size = 0 },
+        { .id = 4, .name = "d", .categories = {"b1", "c1"}, .numCategories = 2, .parent = 3, .size = 4 },
+    };
+
     int numLeafFiles;
     char *expectedLeafFiles[] = {
         "Audio.mp3",
@@ -193,6 +200,21 @@ int main(void) {
     }
     free(returnedLeafFiles);
 
+    //more leaf tests
+    char *expectedLeafFiles1[] = {
+        "a",
+        "b",
+        "d"
+    };
+    char **returnedLeafFiles1 = leafFiles(testFiles1, 4, &numLeafFiles);
+    qsort(returnedLeafFiles1, numLeafFiles, sizeof(char *), &qsortStrcmp);
+    assert(numLeafFiles == 3);
+    for (int i = 0; i < 3; i++) {
+        assert(strcmp(returnedLeafFiles1[i], expectedLeafFiles1[i]) == 0);
+        free(returnedLeafFiles1[i]);
+    }
+    free(returnedLeafFiles1);
+
     int numCategories;
     char *expectedCategories[] = {"Documents", "Folder", "Media"};
     char **returnedCategories = kLargestCategories(testFiles, 12, 3, &numCategories);
@@ -211,6 +233,17 @@ int main(void) {
     }
     free(returnedCategories);
 
+    //more category tests
+    char *expectedCategories1[] = {"a1", "b1"};
+    char **returnedCategories1 = kLargestCategories(testFiles1, 4, 2, &numCategories);
+    assert(numCategories == 2);
+        for (int i = 0; i < 2; i++) {
+        assert(strcmp(returnedCategories1[i], expectedCategories1[i]) == 0);
+        free(returnedCategories1[i]);
+    }
+    free(returnedCategories1);
+
     assert(largestFileSize(testFiles, 12) == 20992);
+    assert(largestFileSize(testFiles1, 4) == 7);
 
 }
